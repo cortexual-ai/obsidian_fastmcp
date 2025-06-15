@@ -4,6 +4,7 @@ import yaml
 from pathlib import Path
 from models.note_models import ObsidianNote
 from config.settings import get_vault_path
+from utils.utils import get_file_creation_time
 
 logger = logging.getLogger(__name__)
 
@@ -145,10 +146,13 @@ async def update_note(note: ObsidianNote):
         if not file_path.exists():
             raise FileNotFoundError(f"Note not found: {file_path}")
             
+        # Get creation date using utility function
+        created_date = get_file_creation_time(str(file_path))
+            
         # Format the note content with metadata
         formatted_content = f"""---
 title: {note.title}
-created: {datetime.now().isoformat()}
+created: {created_date}
 modified: {datetime.now().isoformat()}
 tags: {', '.join(note.tags)}
 aliases: {', '.join(note.aliases)}
