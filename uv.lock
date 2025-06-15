@@ -250,16 +250,18 @@ wheels = [
 [[package]]
 name = "obsidian-fastmcp"
 version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "fastmcp" },
     { name = "pip" },
+    { name = "python-dotenv" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "fastmcp", specifier = ">=2.8.1" },
     { name = "pip", specifier = ">=25.1.1" },
+    { name = "python-dotenv", specifier = ">=1.0.1" },
 ]
 
 [[package]]
