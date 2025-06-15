@@ -1,6 +1,6 @@
 from fastmcp import FastMCP
 from models import ObsidianNote
-from tools import create_note, read_note
+from tools import create_note, read_note, update_note
 from dotenv import load_dotenv
 import sys
 import logging
@@ -38,6 +38,14 @@ try:
             return await read_note(title, folder)
         except Exception as e:
             logger.error(f"Error in read_note_tool: {str(e)}", exc_info=True)
+            raise
+
+    @mcp.tool
+    async def update_note_tool(note: ObsidianNote):
+        try:
+            return await update_note(note)
+        except Exception as e:
+            logger.error(f"Error in update_note_tool: {str(e)}", exc_info=True)
             raise
 
     if __name__ == "__main__":
