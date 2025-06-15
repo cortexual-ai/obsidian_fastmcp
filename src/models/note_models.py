@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Literal, List
+from typing import Literal
 
 class ObsidianNote(BaseModel):
     title: str

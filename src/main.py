@@ -1,6 +1,6 @@
 from fastmcp import FastMCP
-from .models import ObsidianNote
-from .tools import create_note
+from src.models import ObsidianNote
+from src.tools import create_note
 from dotenv import load_dotenv
 
 # Load environment variables

@@ -1,8 +1,7 @@
 from datetime import datetime
-from pathlib import Path
 import re
-from ..models.note_models import ObsidianNote
-from ..config.settings import get_vault_path
+from src.models.note_models import ObsidianNote
+from src.config.settings import get_vault_path
 
 async def create_note(note: ObsidianNote):
     try:
