@@ -1,9 +1,8 @@
 from fastmcp import FastMCP
-from models import ObsidianNote
-from tools import create_note, read_note, update_note
 from dotenv import load_dotenv
 import sys
 import logging
+from handlers import register_note_tools
 
 # Configure logging
 logging.basicConfig(
@@ -23,30 +22,9 @@ try:
             "pyyaml"
         ]
     )
-    
-    @mcp.tool
-    async def create_note_tool(note: ObsidianNote):
-        try:
-            return await create_note(note)
-        except Exception as e:
-            logger.error(f"Error in create_note_tool: {str(e)}", exc_info=True)
-            raise
 
-    @mcp.tool
-    async def read_note_tool(title: str, folder: str = ""):
-        try:
-            return await read_note(title, folder)
-        except Exception as e:
-            logger.error(f"Error in read_note_tool: {str(e)}", exc_info=True)
-            raise
-
-    @mcp.tool
-    async def update_note_tool(note: ObsidianNote):
-        try:
-            return await update_note(note)
-        except Exception as e:
-            logger.error(f"Error in update_note_tool: {str(e)}", exc_info=True)
-            raise
+    # Register tools
+    register_note_tools(mcp)
 
     if __name__ == "__main__":
         logger.info("Starting FastMCP server...")
