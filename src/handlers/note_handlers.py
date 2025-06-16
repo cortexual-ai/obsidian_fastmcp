@@ -6,7 +6,7 @@ These handlers wrap the core note operations from tools.note_tools.
 import logging
 from fastmcp import FastMCP
 from models import ObsidianNote
-from tools.note_tools import create_note, read_note, update_note
+from tools import create_note, read_note, update_note
 
 logger = logging.getLogger(__name__)
 
