@@ -10,25 +10,22 @@ This is a Model Control Protocol (MCP) for Claude Desktop that allows you to cre
    pip install -e .
    ```
 3. Set up your environment variables:
-   - Create a `.env` file with your Obsidian vault path:
+   - Create a `.env` file with the following configuration:
      ```
      OBSIDIAN_VAULT_PATH=~/Desktop/work_vault
+     PYTHONPATH=/path/to/your/project/root
      ```
+   Note: Replace `/path/to/your/project/root` with the absolute path to the root directory of this project.
 
-## Running the Server
+## Installing the MCP in Claude Desktop
 
-Start the FastAPI server:
-```bash
-uvicorn main:app --reload
-```
+1. Start the MCP server installation:
+   ```bash
+   fastmcp install src/main.py
+   ```
+   This command will register the MCP with Claude Desktop automatically.
 
-## Using with Claude Desktop
-
-1. Open Claude Desktop
-2. Go to Settings > MCPs
-3. Click "Add MCP"
-4. Select the `.claude/mcp.json` file from this project
-5. The MCP will be available in your Claude Desktop conversations
+2. Open Claude Desktop and verify that the Obsidian FastMCP is available in your conversations.
 
 ## Available Commands
 
