@@ -23,11 +23,19 @@ async def read_note(title: str, folder: str = "") -> ObsidianNote:
         logger.info(f"Reading note: {title} from folder: {folder}")
         vault_path = get_vault_path()
         
+        # Clean the title by stripping whitespace but preserving internal spaces
+        cleaned_title = title.strip()
+        if not cleaned_title:
+            raise ValueError("Note title cannot be empty or whitespace only")
+        
         # Construct the file path
         if folder:
-            file_path = vault_path / folder / f"{title}.md"
+            folder_path = vault_path / folder.strip()
+            if not folder_path.exists():
+                raise FileNotFoundError(f"Folder not found: {folder_path}")
+            file_path = folder_path / f"{cleaned_title}.md"
         else:
-            file_path = vault_path / f"{title}.md"
+            file_path = vault_path / f"{cleaned_title}.md"
             
         logger.info(f"Reading from file path: {file_path}")
         
@@ -47,9 +55,9 @@ async def read_note(title: str, folder: str = "") -> ObsidianNote:
             
         # Create ObsidianNote object
         note = ObsidianNote(
-            title=title,
+            title=cleaned_title,
             content=content.strip(),
-            folder=folder,
+            folder=folder.strip() if folder else "",
             tags=frontmatter.get("tags", "").split(", ") if frontmatter.get("tags") else [],
             aliases=frontmatter.get("aliases", "").split(", ") if frontmatter.get("aliases") else [],
             related=frontmatter.get("related", "").split(", ") if frontmatter.get("related") else [],

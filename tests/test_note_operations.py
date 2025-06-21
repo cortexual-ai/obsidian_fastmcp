@@ -233,4 +233,90 @@ async def test_insert_wikilinks_already_linked(mcp_client, temp_vault):
     # Should still have single wikilinks, no double-linking
     assert "[[Python]]" in content
     assert "[[machine learning]]" in content
-    assert "[[[[Python]]]]" not in content 
+    assert "[[[[Python]]]]" not in content
+
+@pytest.mark.asyncio
+async def test_read_note_with_whitespace_title(mcp_client, temp_vault):
+    """Test reading a note with whitespace in the title."""
+    # Create a note with spaces in the title
+    note_data = {
+        "title": "My Test Note",
+        "content": "This note has spaces in the title.",
+        "tags": ["whitespace", "test"],
+        "folder": ""
+    }
+    await mcp_client.call_tool("create_note_tool", {"note": note_data})
+    
+    # Read the note using the exact title
+    result = await mcp_client.call_tool("read_note_tool", {"title": "My Test Note", "folder": ""})
+    result_text = result[0].text
+    import json
+    result_data = json.loads(result_text)
+    assert result_data["title"] == "My Test Note"
+    assert result_data["content"] == "This note has spaces in the title."
+    assert "whitespace" in result_data["tags"]
+
+@pytest.mark.asyncio
+async def test_read_note_with_leading_trailing_whitespace(mcp_client, temp_vault):
+    """Test reading a note with leading/trailing whitespace in title."""
+    # Create a note first
+    note_data = {
+        "title": "Whitespace Test",
+        "content": "Testing whitespace handling.",
+        "folder": ""
+    }
+    await mcp_client.call_tool("create_note_tool", {"note": note_data})
+    
+    # Try to read with extra whitespace
+    result = await mcp_client.call_tool("read_note_tool", {"title": "  Whitespace Test  ", "folder": ""})
+    result_text = result[0].text
+    import json
+    result_data = json.loads(result_text)
+    assert result_data["title"] == "Whitespace Test"  # Should be cleaned
+    assert result_data["content"] == "Testing whitespace handling."
+
+@pytest.mark.asyncio
+async def test_read_note_with_whitespace_folder(mcp_client, temp_vault):
+    """Test reading a note with whitespace in folder name."""
+    # Create a note in a folder with potential whitespace
+    note_data = {
+        "title": "Folder Test",
+        "content": "Testing folder with whitespace.",
+        "folder": "test folder"
+    }
+    await mcp_client.call_tool("create_note_tool", {"note": note_data})
+    
+    # Read with extra whitespace in folder
+    result = await mcp_client.call_tool("read_note_tool", {"title": "Folder Test", "folder": "  test folder  "})
+    result_text = result[0].text
+    import json
+    result_data = json.loads(result_text)
+    assert result_data["title"] == "Folder Test"
+    assert result_data["folder"] == "test folder"  # Should be cleaned
+    assert result_data["content"] == "Testing folder with whitespace."
+
+@pytest.mark.asyncio
+async def test_read_note_empty_title_error(mcp_client, temp_vault):
+    """Test that reading a note with empty/whitespace-only title raises error."""
+    # Try to read with empty title
+    try:
+        await mcp_client.call_tool("read_note_tool", {"title": "", "folder": ""})
+        assert False, "Should have raised an error for empty title"
+    except Exception as e:
+        assert "empty" in str(e).lower() or "whitespace" in str(e).lower()
+    
+    # Try to read with whitespace-only title
+    try:
+        await mcp_client.call_tool("read_note_tool", {"title": "   ", "folder": ""})
+        assert False, "Should have raised an error for whitespace-only title"
+    except Exception as e:
+        assert "empty" in str(e).lower() or "whitespace" in str(e).lower()
+
+@pytest.mark.asyncio
+async def test_read_note_nonexistent_folder(mcp_client, temp_vault):
+    """Test reading a note from a non-existent folder."""
+    try:
+        await mcp_client.call_tool("read_note_tool", {"title": "Test", "folder": "nonexistent"})
+        assert False, "Should have raised an error for non-existent folder"
+    except Exception as e:
+        assert "not found" in str(e).lower() or "folder" in str(e).lower() 
