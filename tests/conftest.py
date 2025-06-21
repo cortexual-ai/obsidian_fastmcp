@@ -5,7 +5,7 @@ import os
 import pytest
 import tempfile
 from pathlib import Path
-from fastmcp import FastMCP
+from fastmcp import FastMCP, Client
 from handlers import register_note_tools
 
 @pytest.fixture
@@ -28,4 +28,10 @@ def mcp_server(temp_vault):
         dependencies=["pyyaml"]
     )
     register_note_tools(mcp)
-    return mcp 
+    return mcp
+
+@pytest.fixture
+async def mcp_client(mcp_server):
+    """Create a test client for the FastMCP server."""
+    async with Client(mcp_server) as client:
+        yield client 
