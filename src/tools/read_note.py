@@ -1,6 +1,5 @@
 import logging
 import yaml
-from pathlib import Path
 from models.note_models import ObsidianNote
 from config.settings import get_vault_path
 
@@ -54,9 +53,9 @@ async def read_note(title: str, folder: str = "") -> ObsidianNote:
             tags=frontmatter.get("tags", "").split(", ") if frontmatter.get("tags") else [],
             aliases=frontmatter.get("aliases", "").split(", ") if frontmatter.get("aliases") else [],
             related=frontmatter.get("related", "").split(", ") if frontmatter.get("related") else [],
-            category=frontmatter.get("category", ""),
+            category=frontmatter.get("category") or "",
             type=frontmatter.get("type", "note"),
-            summary=frontmatter.get("summary", "")
+            summary=frontmatter.get("summary") or ""
         )
         
         logger.info(f"Successfully read note: {title}")
