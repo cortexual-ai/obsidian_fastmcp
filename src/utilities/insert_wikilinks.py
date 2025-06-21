@@ -14,13 +14,41 @@ def insert_wikilinks(content: str, phrases: list[str]) -> str:
     """
 
     def replace_phrase(text, phrase):
+        # Skip empty phrases
+        if not phrase or not phrase.strip():
+            return text
+            
         # Escape special regex characters in phrase
         escaped = re.escape(phrase)
-        # Regex to find standalone instances of the phrase not already wikilinked
-        pattern = r'(?<!\[\[)(' + escaped + r')(?![\]\]])'
-        return re.sub(pattern, r'[[\1]]', text)
+        
+        # Find exact phrase matches that aren't already wikilinked
+        # Use word boundaries for alphanumeric phrases, exact match for others
+        if re.match(r'^\w+$', phrase):
+            # Simple word - use word boundaries
+            pattern = r'(?<!\[\[)\b(' + escaped + r')\b(?!\]\])'
+        else:
+            # Complex phrase or special characters - use exact match
+            pattern = r'(?<!\[\[)(' + escaped + r')(?!\]\])'
+        
+        def replacement(match):
+            # Check if this match is inside existing wikilinks
+            start_pos = match.start()
+            
+            # Look backward for unclosed [[
+            before_text = text[:start_pos]
+            open_brackets = before_text.count('[[') - before_text.count(']]')
+            
+            # If we're inside wikilinks, don't replace
+            if open_brackets > 0:
+                return match.group(1)
+            else:
+                return f'[[{match.group(1)}]]'
+        
+        return re.sub(pattern, replacement, text)
 
-    for phrase in sorted(phrases, key=len, reverse=True):  # Longest phrases first
+    # Filter out empty phrases and sort by length (longest first)
+    valid_phrases = [p for p in phrases if p and p.strip()]
+    for phrase in sorted(valid_phrases, key=len, reverse=True):
         content = replace_phrase(content, phrase)
 
     return content
