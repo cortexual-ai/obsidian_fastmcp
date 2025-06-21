@@ -48,6 +48,8 @@ utils/: Shared utility functions
    - Ask user for guidance when conflicts arise
 
 3. **Implementation Phase**
+   - Always implement in a new git branch
+   - Always activate environment via `source .venv/bin/activate`
    - Follow existing code patterns and architecture
    - Implement async functions with proper error handling
    - Use structured logging throughout
