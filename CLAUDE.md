@@ -35,6 +35,11 @@ utils/: Shared utility functions
 
 ## Implementation Workflow
 
+### Branch Management Rules
+- **ALWAYS REBASE WHEN SWITCHING BRANCHES**: Before starting work on any branch, always rebase it onto the latest main branch to get the most recent improvements and avoid conflicts
+- **Rebase command**: `git fetch origin main && git rebase origin/main`
+- **This ensures**: All branches have the latest architecture, test framework, and bug fixes
+
 ### For Each New Feature
 1. **Pre-Planning Phase**
    - **Check for useful MCPs**: Before starting any task, evaluate if there are MCPs that would be helpful (GitHub, context7, etc.)
