@@ -1,6 +1,5 @@
 from datetime import datetime
 import logging
-from pathlib import Path
 from models.note_models import ObsidianNote
 from config.settings import get_vault_path
 from utils.utils import get_file_creation_time

@@ -38,8 +38,8 @@ async def load_all_notes_metadata() -> List[dict]:
                     try:
                         _, fm, _ = content.split("---", 2)
                         frontmatter = yaml.safe_load(fm.strip())
-                    except:
-                        logger.warning(f"Failed to parse frontmatter for {file_path}")
+                    except Exception as e:
+                        logger.warning(f"Failed to parse frontmatter for {file_path}: {e}")
                 
                 # Extract title from filename if not in frontmatter
                 title = frontmatter.get("title", file_path.stem)
