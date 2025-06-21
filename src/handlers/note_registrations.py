@@ -6,7 +6,7 @@ These registrations wrap the core note operations from tools.note_tools.
 import logging
 from fastmcp import FastMCP
 from models import ObsidianNote
-from tools import create_note, read_note, update_note, load_all_notes_metadata
+from tools import create_note, read_note, update_note, load_all_notes_metadata, insert_wikilinks_in_note
 
 logger = logging.getLogger(__name__)
 
@@ -49,6 +49,15 @@ def register_note_tools(mcp: FastMCP):
             logger.error(f"Error in load_notes_metadata_tool: {str(e)}", exc_info=True)
             raise
 
+    @mcp.tool
+    async def insert_wikilinks_tool(title: str, phrases: list[str], folder: str = ""):
+        """Insert wikilinks for specified phrases in an existing note."""
+        try:
+            return await insert_wikilinks_in_note(title, phrases, folder)
+        except Exception as e:
+            logger.error(f"Error in insert_wikilinks_tool: {str(e)}", exc_info=True)
+            raise
+
     @mcp.resource("file://obsidian/notes/{folder}/{title}")
     async def read_note_resource(title: str, folder: str = "") -> str:
         """Read a note's content as a resource."""
@@ -59,4 +68,4 @@ def register_note_tools(mcp: FastMCP):
             logger.error(f"Error in read_note_resource: {str(e)}", exc_info=True)
             raise
 
-    return [create_note_tool, read_note_tool, update_note_tool, read_note_resource, load_notes_metadata_tool] 
+    return [create_note_tool, read_note_tool, update_note_tool, insert_wikilinks_tool, read_note_resource, load_notes_metadata_tool] 

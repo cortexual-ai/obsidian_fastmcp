@@ -133,4 +133,104 @@ async def test_note_resource(mcp_client, temp_vault):
     result_text = result[0].text
     import json
     result_data = json.loads(result_text)
-    assert result_data["content"] == "This is a resource test." 
+    assert result_data["content"] == "This is a resource test."
+
+@pytest.mark.asyncio
+async def test_insert_wikilinks_tool(mcp_client, temp_vault):
+    """Test inserting wikilinks into an existing note."""
+    # First create a note
+    note_data = {
+        "title": "Wikilinks Test",
+        "content": "This note is about Python programming and machine learning. Python is great for data science.",
+        "folder": "wikilinks_test"
+    }
+    await mcp_client.call_tool("create_note_tool", {"note": note_data})
+    
+    # Insert wikilinks
+    phrases = ["Python", "machine learning", "data science"]
+    result = await mcp_client.call_tool("insert_wikilinks_tool", {
+        "title": "Wikilinks Test", 
+        "phrases": phrases, 
+        "folder": "wikilinks_test"
+    })
+    
+    result_text = result[0].text
+    import json
+    result_data = json.loads(result_text)
+    assert result_data["message"] == "Wikilinks inserted successfully"
+    assert result_data["changes_made"]
+    assert result_data["phrases_processed"] == phrases
+    
+    # Verify the wikilinks were inserted by reading the note back
+    read_result = await mcp_client.call_tool("read_note_tool", {"title": "Wikilinks Test", "folder": "wikilinks_test"})
+    read_result_text = read_result[0].text
+    read_result_data = json.loads(read_result_text)
+    content = read_result_data["content"]
+    
+    # Check that wikilinks were properly inserted
+    assert "[[Python]]" in content
+    assert "[[machine learning]]" in content
+    assert "[[data science]]" in content
+    # Make sure we didn't double-link anything
+    assert "[[[[Python]]]]" not in content
+
+@pytest.mark.asyncio  
+async def test_insert_wikilinks_no_changes(mcp_client, temp_vault):
+    """Test inserting wikilinks when phrases are not found."""
+    # First create a note
+    note_data = {
+        "title": "No Changes Test",
+        "content": "This note is about JavaScript and web development.",
+        "folder": "wikilinks_test"
+    }
+    await mcp_client.call_tool("create_note_tool", {"note": note_data})
+    
+    # Try to insert wikilinks for phrases not in the content
+    phrases = ["Python", "machine learning"]
+    result = await mcp_client.call_tool("insert_wikilinks_tool", {
+        "title": "No Changes Test", 
+        "phrases": phrases, 
+        "folder": "wikilinks_test"
+    })
+    
+    result_text = result[0].text
+    import json
+    result_data = json.loads(result_text)
+    assert result_data["message"] == "No changes made - phrases not found or already linked"
+    assert not result_data["changes_made"]
+
+@pytest.mark.asyncio
+async def test_insert_wikilinks_already_linked(mcp_client, temp_vault):
+    """Test inserting wikilinks when phrases are already wikilinked."""
+    # First create a note with existing wikilinks
+    note_data = {
+        "title": "Already Linked Test",
+        "content": "This note mentions [[Python]] and discusses [[machine learning]] concepts.",
+        "folder": "wikilinks_test"
+    }
+    await mcp_client.call_tool("create_note_tool", {"note": note_data})
+    
+    # Try to insert wikilinks for already linked phrases
+    phrases = ["Python", "machine learning"]
+    result = await mcp_client.call_tool("insert_wikilinks_tool", {
+        "title": "Already Linked Test", 
+        "phrases": phrases, 
+        "folder": "wikilinks_test"
+    })
+    
+    result_text = result[0].text
+    import json
+    result_data = json.loads(result_text)
+    assert result_data["message"] == "No changes made - phrases not found or already linked"
+    assert not result_data["changes_made"]
+    
+    # Verify content hasn't changed
+    read_result = await mcp_client.call_tool("read_note_tool", {"title": "Already Linked Test", "folder": "wikilinks_test"})
+    read_result_text = read_result[0].text
+    read_result_data = json.loads(read_result_text)
+    content = read_result_data["content"]
+    
+    # Should still have single wikilinks, no double-linking
+    assert "[[Python]]" in content
+    assert "[[machine learning]]" in content
+    assert "[[[[Python]]]]" not in content 
