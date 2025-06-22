@@ -26,7 +26,7 @@ signal.signal(signal.SIGTERM, handle_shutdown)
 signal.signal(signal.SIGINT, handle_shutdown)
 
 try:
-    mcp = FastMCP(
+    mcp: FastMCP = FastMCP(
         name="Obsidian FastMCP",
         dependencies=[
             "pyyaml"

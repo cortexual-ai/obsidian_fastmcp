@@ -48,8 +48,8 @@ async def read_note(title: str, folder: str = "") -> ObsidianNote:
             
         # Split frontmatter and content
         if content.startswith("---"):
-            _, frontmatter, content = content.split("---", 2)
-            frontmatter = yaml.safe_load(frontmatter.strip())
+            _, frontmatter_text, content = content.split("---", 2)
+            frontmatter = yaml.safe_load(frontmatter_text.strip()) or {}
         else:
             frontmatter = {}
             

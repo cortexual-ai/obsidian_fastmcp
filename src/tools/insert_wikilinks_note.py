@@ -1,7 +1,7 @@
 import logging
 from tools.read_note import read_note
 from tools.update_note import update_note
-from utilities.insert_wikilinks import insert_wikilinks
+from utils.insert_wikilinks import insert_wikilinks
 
 logger = logging.getLogger(__name__)
 
