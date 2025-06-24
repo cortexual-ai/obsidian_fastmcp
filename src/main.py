@@ -8,30 +8,27 @@ from handlers import register_note_tools
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    stream=sys.stderr
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    stream=sys.stderr,
 )
 logger = logging.getLogger(__name__)
 
 # Load environment variables
 load_dotenv()
 
+
 def handle_shutdown(signum, frame):
     """Handle shutdown signals gracefully."""
     logger.info("Received shutdown signal. Closing server...")
     sys.exit(0)
+
 
 # Register signal handlers
 signal.signal(signal.SIGTERM, handle_shutdown)
 signal.signal(signal.SIGINT, handle_shutdown)
 
 try:
-    mcp: FastMCP = FastMCP(
-        name="Obsidian FastMCP",
-        dependencies=[
-            "pyyaml"
-        ]
-    )
+    mcp: FastMCP = FastMCP(name="Obsidian FastMCP", dependencies=["pyyaml"])
 
     # Register tools
     register_note_tools(mcp)

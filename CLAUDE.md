@@ -107,6 +107,9 @@ git branch -d feature/your-feature-name
 git push origin --delete feature/your-feature-name
 ```
 
+### Development Guidelines
+- When working on a new implementation, please work on a new branch
+
 ## Future Development Plans
 
 The project includes detailed plans for:
@@ -123,3 +126,6 @@ PYTHONPATH=/absolute/path/to/project/root
 ```
 
 The project uses **uv** for package management with `uv.lock` for reproducible builds.
+```
+
+The project uses Python>=3.13 and can use modern typing syntax.

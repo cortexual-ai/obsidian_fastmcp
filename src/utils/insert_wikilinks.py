@@ -1,5 +1,6 @@
 import re
 
+
 # Utility function to insert wikilinks for given phrases in markdown content
 def insert_wikilinks(content: str, phrases: list[str]) -> str:
     """
@@ -17,33 +18,33 @@ def insert_wikilinks(content: str, phrases: list[str]) -> str:
         # Skip empty phrases
         if not phrase or not phrase.strip():
             return text
-            
+
         # Escape special regex characters in phrase
         escaped = re.escape(phrase)
-        
+
         # Find exact phrase matches that aren't already wikilinked
         # Use word boundaries for alphanumeric phrases, exact match for others
-        if re.match(r'^\w+$', phrase):
+        if re.match(r"^\w+$", phrase):
             # Simple word - use word boundaries
-            pattern = r'(?<!\[\[)\b(' + escaped + r')\b(?!\]\])'
+            pattern = r"(?<!\[\[)\b(" + escaped + r")\b(?!\]\])"
         else:
             # Complex phrase or special characters - use exact match
-            pattern = r'(?<!\[\[)(' + escaped + r')(?!\]\])'
-        
+            pattern = r"(?<!\[\[)(" + escaped + r")(?!\]\])"
+
         def replacement(match):
             # Check if this match is inside existing wikilinks
             start_pos = match.start()
-            
+
             # Look backward for unclosed [[
             before_text = text[:start_pos]
-            open_brackets = before_text.count('[[') - before_text.count(']]')
-            
+            open_brackets = before_text.count("[[") - before_text.count("]]")
+
             # If we're inside wikilinks, don't replace
             if open_brackets > 0:
                 return match.group(1)
             else:
-                return f'[[{match.group(1)}]]'
-        
+                return f"[[{match.group(1)}]]"
+
         return re.sub(pattern, replacement, text)
 
     # Filter out empty phrases and sort by length (longest first)
