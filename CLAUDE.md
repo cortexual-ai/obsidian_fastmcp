@@ -1,135 +1,125 @@
-# Claude Code Collaboration Contract
+# CLAUDE.md
 
-This document establishes the working contract between the user and Claude Code for implementing features in the obsidian_fastmcp repository.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Project Overview
-This is an Obsidian FastMCP server that provides tools for interacting with Obsidian vaults. The project integrates tools from various MCPs (Obsidian, Anki, Zotero) while maintaining a consistent codebase style.
+## Development Commands
 
-## Codebase Architecture & Patterns
+### Essential Commands
+- **Activate environment**: `source .venv/bin/activate`
+- **Install for Claude Desktop**: `fastmcp install src/main.py`
+- **Run tests**: `pytest` (after activating venv)
+- **Lint code**: `ruff check . && ruff format .`
+- **Type checking**: `mypy src/`
+- **Run single test**: `pytest tests/test_specific.py::test_function`
 
-### Current Structure
-- `src/main.py`: FastMCP server setup with graceful shutdown handling
-- `src/config/settings.py`: Environment-based configuration (OBSIDIAN_VAULT_PATH)
-- `src/models/`: Pydantic models with strong typing (ObsidianNote)
-- `src/handlers/`: FastMCP tool registration wrappers
-- `src/tools/`: Core business logic implementations
-- `src/utils/`: Helper utilities
+### Testing & Quality Assurance
+Always run these before committing:
+1. `source .venv/bin/activate`
+2. `ruff check . && ruff format .`
+3. `mypy src/`
+4. `pytest`
 
-### Code Style Standards
+## Architecture Overview
+
+This is an **Obsidian FastMCP server** that bridges Claude Desktop with Obsidian vaults for AI-powered note management.
+
+### Core Architecture Pattern
+```
+src/
+    main.py              # FastMCP server entry point
+    config/settings.py   # Environment configuration
+    models/              # Pydantic data models
+    handlers/            # FastMCP @mcp.tool wrappers
+    tools/              # Core business logic (async functions)
+    utils/              # Shared utilities
+```
+
+### Key Components
+
+**Configuration Layer (`src/config/`)**:
+- Environment-based configuration with `OBSIDIAN_VAULT_PATH`
+- Handles path expansion (`~`) and validation
+- Centralized logging setup
+
+**Data Models (`src/models/note_models.py`)**:
+- `ObsidianNote`: Rich Pydantic model with YAML frontmatter support
+- Supports metadata: tags, aliases, related notes, categories, note types
+- Type system: note, concept, tool, person, framework, paper, project
+
+**Tool Layer (`src/tools/`)**:
+- `create_note.py`: Creates notes with YAML frontmatter
+- `read_note.py`: Parses notes with frontmatter extraction
+- `update_note.py`: Updates notes preserving creation timestamps
+- `load_metadata.py`: Aggregates vault-wide metadata
+- `insert_wikilinks_note.py`: Intelligent wikilink insertion
+
+**Handler Layer (`src/handlers/note_registrations.py`)**:
+- FastMCP tool registration with `@mcp.tool` decorators
+- Wraps core tools for MCP compatibility
+- Comprehensive error handling
+
+## Code Style Standards
+
 - **KISS principle**: Keep implementations simple and straightforward
 - **Composition over inheritance**: Prefer functions over classes
 - **Strong type hints**: Use Pydantic models and proper Python typing
 - **Async/await**: All tool functions are async
-- **Structured logging**: Use logger with proper error handling and exc_info=True
-- **Environment config**: Use .env files and os.getenv()
-- **YAML frontmatter**: Obsidian notes use YAML metadata blocks
+- **Structured logging**: Use logger with proper error handling and `exc_info=True`
+- **Environment config**: Use `.env` files and `os.getenv()`
 
-### File Organization Pattern
+## Testing Architecture
+
+- **Test framework**: pytest with async support (`pytest-asyncio`)
+- **Test isolation**: Temporary vault fixture for each test
+- **Coverage**: 20+ test cases covering core functionality
+- **Mocking**: FastMCP client/server testing infrastructure
+- **Edge cases**: Whitespace handling, error conditions, file operations
+
+## Repository Etiquette
+
+### Development Workflow
+- Always start from latest main
+```bash
+git checkout main
+git pull origin main
+git checkout -b feature/your-feature-name
 ```
-handlers/: FastMCP @mcp.tool decorators that wrap core functions
-tools/: Core business logic functions (async)
-models/: Pydantic data models
-config/: Configuration and settings
-utils/: Shared utility functions
+
+- Develop and commit
+```bash
+# Make your changes
+git add .
+git commit -m "Clear, descriptive commit message"
+
+# Push branch to GitHub
+git push origin feature/your-feature-name
+```
+- Once PR is merged, clean up
+```bash
+# Switch back to main and update
+git checkout main
+git pull origin main
+
+# Delete local feature branch
+git branch -d feature/your-feature-name
+
+# Delete remote branch (if not auto-deleted)
+git push origin --delete feature/your-feature-name
 ```
 
-## Implementation Workflow
+## Future Development Plans
 
-### Branch Management Rules
-- **ALWAYS REBASE WHEN SWITCHING BRANCHES**: Before starting work on any branch, always rebase it onto the latest main branch to get the most recent improvements and avoid conflicts
-- **Rebase command**: `git fetch origin main && git rebase origin/main`
-- **This ensures**: All branches have the latest architecture, test framework, and bug fixes
+The project includes detailed plans for:
+- **Anki Integration**: Flashcard generation from notes
+- **Academic Paper Server**: arXiv/PubMed integration
+- **Research Capabilities**: Literature review and synthesis
 
-### For Each New Feature
-1. **Pre-Planning Phase**
-   - **Check for useful MCPs**: Before starting any task, evaluate if there are MCPs that would be helpful (GitHub, context7, etc.)
-   - **Request MCP setup**: If useful MCPs are identified but not available, help user set them up first
-   - **Verify MCP availability**: Confirm required MCPs are configured and accessible
+## Environment Setup
 
-2. **Planning Phase**
-   - Use TodoWrite tool to create detailed task breakdown
-   - Ask user for GitHub repo links to analyze external MCP implementations
-   - Analyze external patterns vs current codebase patterns
-   - Ask user for guidance when conflicts arise
+Create `.env` file:
+```
+OBSIDIAN_VAULT_PATH=~/Desktop/work_vault
+PYTHONPATH=/absolute/path/to/project/root
+```
 
-3. **Implementation Phase**
-   - Always implement in a new git branch
-   - Always activate environment via `source .venv/bin/activate`
-   - Follow existing code patterns and architecture
-   - Implement async functions with proper error handling
-   - Use structured logging throughout
-   - Maintain type safety with Pydantic models
-   - Keep functions simple and focused
-
-4. **Quality Assurance**
-   - Run `ruff` for linting
-   - Run `mypy` for type checking
-   - Write tests after implementation
-   - Commit significant updates
-   - Ask user for approval before major testing phases
-
-5. **Testing & Deployment**
-   - User tests via `fastmcp install <path>` and Claude Desktop
-   - User provides feedback from user perspective
-   - Make adjustments based on user testing
-
-### External MCP Integration
-- User provides GitHub repo links for reference
-- Analyze their tool implementations first
-- Adapt their patterns to match our codebase style
-- When unsure about design decisions, ask user with recommendations
-- User may copy/paste specific implementations when needed
-
-### Commit Strategy
-- Commit changes as work progresses
-- Ask for user approval before significant milestones
-- Request user testing after major feature completion
-- Never commit without explicit user approval for testing phases
-
-### Communication Protocol
-- Create todo lists for complex/multi-step tasks
-- Ask questions when external patterns conflict with current style
-- Present options with recommendations for design decisions
-- Keep user informed of progress through todo list updates
-- Request approval before user testing phases
-
-## Quality Standards
-
-### Code Quality
-- All functions must have proper type hints
-- Use Pydantic models for data validation
-- Implement proper error handling with logging
-- Follow async/await patterns consistently
-- Maintain clean separation between handlers, tools, and models
-
-### Testing Standards
-- Write tests after implementation
-- User performs integration testing via Claude Desktop
-- Address feedback iteratively
-- Run linting (ruff) and type checking (mypy) before commits
-
-### Documentation Standards
-- Use clear docstrings for functions
-- Log important operations with structured logging
-- Maintain this contract document as collaboration evolves
-
-## Tools & Commands
-- **Linting**: `ruff`
-- **Type checking**: `mypy`
-- **Installation/Testing**: `fastmcp install <path>`
-- **User testing environment**: Claude Desktop client
-
-## Available MCPs
-- **GitHub MCP**: Official GitHub server for repository access
-  - Installation: `npm install -g @modelcontextprotocol/server-github`
-  - Config: Add to `~/Library/Application Support/Claude/claude_desktop_config.json`
-  - Requires: GitHub Personal Access Token
-- **Other useful MCPs**: Evaluate context7, filesystem, database MCPs as needed
-
-## Decision Making
-- Claude asks user when external MCP patterns conflict with current codebase
-- User provides guidance on design decisions
-- Focus on maintaining consistency with existing patterns
-- Prioritize simplicity and maintainability
-
-This contract ensures smooth collaboration while maintaining code quality and consistency across the project.
+The project uses **uv** for package management with `uv.lock` for reproducible builds.

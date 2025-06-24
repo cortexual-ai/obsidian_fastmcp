@@ -1,7 +1,7 @@
 """
 Tests for wikilinks utility function.
 """
-from utilities.insert_wikilinks import insert_wikilinks
+from utils.insert_wikilinks import insert_wikilinks
 
 
 class TestInsertWikilinks:
