@@ -1,10 +1,7 @@
-import logging
 from pathlib import Path
 from typing import List
 import yaml
 from config.settings import get_vault_path
-
-logger = logging.getLogger(__name__)
 
 
 async def load_all_notes_metadata() -> List[dict]:
@@ -18,7 +15,6 @@ async def load_all_notes_metadata() -> List[dict]:
         Exception: If there is an error reading the vault or parsing notes
     """
     try:
-        logger.info("Starting to load metadata from all notes")
         vault_path = get_vault_path()
         notes = []
 
@@ -39,10 +35,9 @@ async def load_all_notes_metadata() -> List[dict]:
                     try:
                         _, fm, _ = content.split("---", 2)
                         frontmatter = yaml.safe_load(fm.strip())
-                    except Exception as e:
-                        logger.warning(
-                            f"Failed to parse frontmatter for {file_path}: {e}"
-                        )
+                    except Exception:
+                        # Skip files with invalid frontmatter
+                        pass
 
                 # Extract title from filename if not in frontmatter
                 title = frontmatter.get("title", file_path.stem)
@@ -70,13 +65,11 @@ async def load_all_notes_metadata() -> List[dict]:
 
                 notes.append(metadata)
 
-            except Exception as e:
-                logger.warning(f"Error processing note {file_path}: {str(e)}")
+            except Exception:
+                # Skip files that can't be processed
                 continue
 
-        logger.info(f"Successfully loaded metadata from {len(notes)} notes")
         return notes
 
     except Exception as e:
-        logger.error(f"Error loading notes metadata: {str(e)}", exc_info=True)
         raise Exception(f"Failed to load notes metadata: {str(e)}")

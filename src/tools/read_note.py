@@ -1,9 +1,6 @@
-import logging
 import yaml
 from models.note_models import ObsidianNote
 from config.settings import get_vault_path
-
-logger = logging.getLogger(__name__)
 
 
 async def read_note(title: str, folder: str = "") -> ObsidianNote:
@@ -21,7 +18,6 @@ async def read_note(title: str, folder: str = "") -> ObsidianNote:
         Exception: If the note cannot be found or read
     """
     try:
-        logger.info(f"Reading note: {title} from folder: {folder}")
         vault_path = get_vault_path()
 
         # Clean the title by stripping whitespace but preserving internal spaces
@@ -37,8 +33,6 @@ async def read_note(title: str, folder: str = "") -> ObsidianNote:
             file_path = folder_path / f"{cleaned_title}.md"
         else:
             file_path = vault_path / f"{cleaned_title}.md"
-
-        logger.info(f"Reading from file path: {file_path}")
 
         if not file_path.exists():
             raise FileNotFoundError(f"Note not found: {file_path}")
@@ -73,9 +67,7 @@ async def read_note(title: str, folder: str = "") -> ObsidianNote:
             summary=frontmatter.get("summary") or "",
         )
 
-        logger.info(f"Successfully read note: {title}")
         return note
 
     except Exception as e:
-        logger.error(f"Error reading note: {str(e)}", exc_info=True)
         raise Exception(f"Failed to read note: {str(e)}")

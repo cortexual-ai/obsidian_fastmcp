@@ -3,7 +3,6 @@ Note-related FastMCP registrations.
 These registrations wrap the core note operations from tools.note_tools.
 """
 
-import logging
 from fastmcp import FastMCP
 from models import ObsidianNote
 from tools import (
@@ -14,8 +13,6 @@ from tools import (
     insert_wikilinks_in_note,
 )
 
-logger = logging.getLogger(__name__)
-
 
 def register_note_tools(mcp: FastMCP):
     """Register all note-related tools and resources with the FastMCP instance."""
@@ -25,8 +22,7 @@ def register_note_tools(mcp: FastMCP):
         """Create a new note in Obsidian."""
         try:
             return await create_note(note)
-        except Exception as e:
-            logger.error(f"Error in create_note_tool: {str(e)}", exc_info=True)
+        except Exception:
             raise
 
     @mcp.tool
@@ -34,8 +30,7 @@ def register_note_tools(mcp: FastMCP):
         """Read an existing note from Obsidian."""
         try:
             return await read_note(title, folder)
-        except Exception as e:
-            logger.error(f"Error in read_note_tool: {str(e)}", exc_info=True)
+        except Exception:
             raise
 
     @mcp.tool
@@ -43,8 +38,7 @@ def register_note_tools(mcp: FastMCP):
         """Update an existing note in Obsidian."""
         try:
             return await update_note(note)
-        except Exception as e:
-            logger.error(f"Error in update_note_tool: {str(e)}", exc_info=True)
+        except Exception:
             raise
 
     @mcp.tool
@@ -52,8 +46,7 @@ def register_note_tools(mcp: FastMCP):
         """Load metadata from all notes in the Obsidian vault."""
         try:
             return await load_all_notes_metadata()
-        except Exception as e:
-            logger.error(f"Error in load_notes_metadata_tool: {str(e)}", exc_info=True)
+        except Exception:
             raise
 
     @mcp.tool
@@ -61,8 +54,7 @@ def register_note_tools(mcp: FastMCP):
         """Insert wikilinks for specified phrases in an existing note."""
         try:
             return await insert_wikilinks_in_note(title, phrases, folder)
-        except Exception as e:
-            logger.error(f"Error in insert_wikilinks_tool: {str(e)}", exc_info=True)
+        except Exception:
             raise
 
     @mcp.resource("file://obsidian/notes/{folder}/{title}")
@@ -71,8 +63,7 @@ def register_note_tools(mcp: FastMCP):
         try:
             note = await read_note(title, folder)
             return note.content
-        except Exception as e:
-            logger.error(f"Error in read_note_resource: {str(e)}", exc_info=True)
+        except Exception:
             raise
 
     return [

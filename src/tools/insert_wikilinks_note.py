@@ -1,9 +1,6 @@
-import logging
 from tools.read_note import read_note
 from tools.update_note import update_note
 from utils.insert_wikilinks import insert_wikilinks
-
-logger = logging.getLogger(__name__)
 
 
 async def insert_wikilinks_in_note(title: str, phrases: list[str], folder: str = ""):
@@ -22,9 +19,6 @@ async def insert_wikilinks_in_note(title: str, phrases: list[str], folder: str =
         Exception: If the note cannot be found, read, or updated
     """
     try:
-        logger.info(f"Starting wikilinks insertion for note: {title}")
-        logger.info(f"Phrases to link: {phrases}")
-
         # Read the existing note
         note = await read_note(title, folder)
 
@@ -34,7 +28,6 @@ async def insert_wikilinks_in_note(title: str, phrases: list[str], folder: str =
 
         # Check if any changes were made
         if original_content == modified_content:
-            logger.info("No changes made - phrases not found or already linked")
             return {
                 "message": "No changes made - phrases not found or already linked",
                 "title": title,
@@ -45,8 +38,6 @@ async def insert_wikilinks_in_note(title: str, phrases: list[str], folder: str =
         # Update the note with modified content
         note.content = modified_content
         update_result = await update_note(note)
-
-        logger.info(f"Successfully inserted wikilinks in note: {title}")
 
         return {
             "message": "Wikilinks inserted successfully",
@@ -59,5 +50,4 @@ async def insert_wikilinks_in_note(title: str, phrases: list[str], folder: str =
         }
 
     except Exception as e:
-        logger.error(f"Error inserting wikilinks in note: {str(e)}", exc_info=True)
         raise Exception(f"Failed to insert wikilinks in note: {str(e)}")
