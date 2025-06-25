@@ -13,12 +13,12 @@ This document outlines the step-by-step plan to add Anki card creation capabilit
 ## Phase 1: Foundation Setup
 
 ### 1.1 Dependencies & Configuration
-- [ ] Add `genanki>=1.20.0` to pyproject.toml
-- [ ] Create `AnkiConfig` class in `src/config/settings.py`
-  - [ ] Configurable Anki files location
-  - [ ] Default deck settings
-  - [ ] Export preferences
-- [ ] Update environment variables for Anki paths
+- [x] Add `genanki>=1.20.0` to pyproject.toml
+- [x] Create `AnkiConfig` class in `src/config/settings.py`
+  - [x] Configurable Anki files location
+  - [x] Default deck settings
+  - [x] Export preferences
+- [x] Update environment variables for Anki paths
 
 ### 1.2 Data Models
 - [ ] Create `src/models/anki_models.py`

@@ -1,6 +1,7 @@
 """
 Tests for wikilinks utility function.
 """
+
 from utils.insert_wikilinks import insert_wikilinks
 
 

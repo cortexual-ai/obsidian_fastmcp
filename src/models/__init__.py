@@ -1,3 +1,3 @@
 from models.note_models import ObsidianNote
 
-__all__ = ['ObsidianNote'] 
+__all__ = ["ObsidianNote"]
